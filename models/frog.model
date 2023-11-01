@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/frog/frog.obj",
+        "texture":"models/frog/frog.png"
+    }
+}

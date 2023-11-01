@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/Leveltest/Leveltest.obj",
+        "texture":"models/Leveltest/Leveltest.png"
+    }
+}

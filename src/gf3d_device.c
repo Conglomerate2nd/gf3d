@@ -169,7 +169,7 @@ int gf3d_devices_enumerate()
     gf3d_device_manager.device_list = gfc_list_new();
     gf3d_device_manager.devices = (VkPhysicalDevice *)malloc(sizeof(VkPhysicalDevice)*count);
     vkEnumeratePhysicalDevices(gf3d_device_manager.instance, &count, gf3d_device_manager.devices);
-    
+    //NOTE: counts devices
     for (i = 0; i < count; i++)
     {
         device = gf3d_device_get_info(gf3d_device_manager.devices[i]);

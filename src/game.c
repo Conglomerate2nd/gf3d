@@ -35,6 +35,7 @@ int main(int argc,char *argv[])
     float mouseFrame = 0;
     World *w;
     Entity *agu;
+    Entity* level;
     Particle particle[100];
     Matrix4 skyMat;
     Model *sky;
@@ -60,23 +61,24 @@ int main(int argc,char *argv[])
     
     mouse = gf2d_sprite_load("images/pointer.png",32,32, 16);
     
-    
+    //ALL spawns
     agu = agumon_new(vector3d(0 ,0,0));
+    level = level_new(vector3d(0,0,0));
     if (agu)agu->selected = 1;
     w = world_load("config/testworld.json");
-    
+    //w = world_load("model/Leveltest.model");
     SDL_SetRelativeMouseMode(SDL_TRUE);
     slog_sync();
     gf3d_camera_set_scale(vector3d(1,1,1));
     player_new(vector3d(-50,0,0));
-    
+    /*
     for (a = 0; a < 100; a++)
     {
         particle[a].position = vector3d(gfc_crandom() * 100,gfc_crandom() * 100,gfc_crandom() * 100);
         particle[a].color = gfc_color(0,0,0,1);
-//        particle[a].color = gfc_color(gfc_random(),gfc_random(),gfc_random(),1);
+        particle[a].color = gfc_color(gfc_random(),gfc_random(),gfc_random(),1);//orignally commented out
         particle[a].size = 100 * gfc_random();
-    }
+    }*/
     a = 0;
     sky = gf3d_model_load("models/sky.model");
     gfc_matrix_identity(skyMat);

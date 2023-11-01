@@ -43,7 +43,7 @@ void gf3d_extensions_device_init(VkPhysicalDevice device, const char *config)
     if (!gf3d_device_extensions.enabled_extension_names)return;
 
     vkEnumerateDeviceExtensionProperties(device,NULL, &gf3d_device_extensions.available_extension_count, gf3d_device_extensions.available_extensions);
-    
+    //NOTE: all devices grabbed - 64 extenstions
     if (__DEBUG)
     {
         for (i = 0;i < gf3d_device_extensions.available_extension_count; i++)
@@ -73,7 +73,7 @@ void gf3d_extensions_device_close()
 void gf3d_extensions_instance_init(const char *config)
 {
     int i;
-    
+    //all vk prefixes are documented
     vkEnumerateInstanceExtensionProperties(NULL, &gf3d_instance_extensions.available_extension_count, NULL);
     if (__DEBUG)slog("Total available instance extensions: %i",gf3d_instance_extensions.available_extension_count);
     if (!gf3d_instance_extensions.available_extension_count)return;

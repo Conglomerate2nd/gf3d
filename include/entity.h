@@ -35,6 +35,7 @@ typedef struct Entity_S
     void       (*draw)(struct Entity_S *self); /**<pointer to an optional extra draw funciton*/
     void       (*damage)(struct Entity_S *self, float damage, struct Entity_S *inflictor); /**<pointer to the think function*/
     void       (*onDeath)(struct Entity_S *self); /**<pointer to an funciton to call when the entity dies*/
+
     
     EntityState state;
     
@@ -50,6 +51,11 @@ typedef struct Entity_S
     struct Entity_S *target;    /**<entity to target for weapons / ai*/
     
     void *customData;   /**<IF an entity needs to keep track of extra data, we can do it here*/
+    void   (*gravity)(struct Enitity_S *self);
+    int type;//0=ground,1=player,2=enemy. else is unused
+    int ground;
+    float radius;
+    
 }Entity;
 
 /**
@@ -89,6 +95,12 @@ void entity_draw_all();
 void entity_think(Entity *self);
 
 /**
+ * @brief Check collision
+ * @param self and other
+ * return 1 if collid 0 if not
+ */
+int entity_collide_check(Entity* self, Entity* other);
+/**
  * @brief run the think functions for ALL active entities
  */
 void entity_think_all();
@@ -97,5 +109,7 @@ void entity_think_all();
  * @brief run the update functions for ALL active entities
  */
 void entity_update_all();
+
+void entityCollide(Entity* self);
 
 #endif

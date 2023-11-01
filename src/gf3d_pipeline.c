@@ -239,7 +239,7 @@ Pipeline *gf3d_pipeline_create_from_config(
     VkPipelineColorBlendAttachmentState colorBlendAttachment = {0};
     VkPipelineColorBlendStateCreateInfo colorBlending = {0};
     VkPipelineDepthStencilStateCreateInfo depthStencil = {0};
-    
+    //validate pointers and dont trust input
     if (!vertexInputDescription)
     {
         slog("must provide vertexInputDescription to create the pipeline");

@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "model":"models/enemy/enemy.obj",
+        "texture":"models/enemy/enemy.png"
+    }
+}

@@ -227,7 +227,8 @@ void gf3d_vgraphics_setup(
         slog("Unable to initilaize SDL system: %s",SDL_GetError());
         return;
     }
-    atexit(SDL_Quit);
+    atexit(SDL_Quit);//NOTE:  atexit will take a pointer that takes and returns nothing 
+                     //Kills the first thing that needs to die
     SDL_ShowCursor(SDL_DISABLE);
     if (fullscreen)
     {

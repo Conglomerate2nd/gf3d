@@ -10,5 +10,7 @@
  */
 Entity *agumon_new(Vector3D position);
 
+Entity* agumon_fly_new(Vector3D position);
 
+Entity* agumon_walk_new(Vector3D position);
 #endif
