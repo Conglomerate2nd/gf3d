@@ -46,15 +46,17 @@ typedef struct Entity_S
     Vector3D    scale;
     Vector3D    rotation;
     
-    Uint32      health;     /**<entity dies when it reaches zero*/
+    int      health;     /**<entity dies when it reaches zero*/
     // WHATEVER ELSE WE MIGHT NEED FOR ENTITIES
     struct Entity_S *target;    /**<entity to target for weapons / ai*/
     
     void *customData;   /**<IF an entity needs to keep track of extra data, we can do it here*/
     void   (*gravity)(struct Enitity_S *self);
+    void   (*boundary)(struct Enitity_S* self);
     int type;//0=ground,1=player,2=enemy. else is unused
     int ground;
     float radius;
+    float hp;
     
 }Entity;
 
@@ -110,6 +112,6 @@ void entity_think_all();
  */
 void entity_update_all();
 
-void entityCollide(Entity* self);
+int entityCollide(Entity* self);
 
 #endif

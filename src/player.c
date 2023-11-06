@@ -1,11 +1,27 @@
 #include "simple_logger.h"
 #include "gfc_types.h"
 
+
+#include "gf3d_vgraphics.h"
+#include "gf3d_pipeline.h"
+#include "gf3d_swapchain.h"
+#include "gf3d_model.h"
+#include "gf3d_camera.h"
+#include "gf3d_texture.h"
+#include "gf3d_particle.h"
+
+#include "gf2d_sprite.h"
+#include "gf2d_font.h"
+#include "gf2d_draw.h"
+
+
+
 #include "gf3d_camera.h"
 #include "player.h"
 
 static int thirdPersonMode = 1;
 static int layer = 1;
+static int delay = 0;
 //static int ground = 0;
 
 void player_think(Entity *self);
@@ -52,7 +68,7 @@ Entity *player_new(Vector3D position)
     ent->type = 1;
     ent->ground = 0;
     ent->radius = 1;
-    
+    ent->health = 5;
 
 
     return ent;
@@ -60,6 +76,20 @@ Entity *player_new(Vector3D position)
 
 }
 
+
+void healthDisplay(Entity* self) {
+    gf3d_vgraphics_render_start();
+
+   // gf2d_draw_rect_filled(gfc_rect(10, 10, 1000, 32), gfc_color8(128, 128, 128, 255));
+    
+    
+    gf2d_font_draw_line_tag("5 HP", FT_H1, gfc_color(1, 1, 1, 1), vector2d(10, 10));
+
+   // gf2d_draw_rect(gfc_rect(10, 10, 1000, 32), gfc_color8(255, 255, 255, 255));
+
+    //gf2d_sprite_draw(mouse, vector2d(mousex, mousey), vector2d(2, 2), vector3d(8, 8, 0), gfc_color(0.3, .9, 1, 0.9), (Uint32)mouseFrame);
+    gf3d_vgraphics_render_end();
+}
 
 void player_think(Entity* self)
 {
@@ -71,7 +101,7 @@ void player_think(Entity* self)
     SDL_GetRelativeMouseState(&mx, &my);
     const Uint8* keys;
     keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
-
+   // int delay = 0;
     mouse.x = mx;
     mouse.y = my;
     w = vector2d_from_angle(self->rotation.z);
@@ -81,6 +111,10 @@ void player_think(Entity* self)
     right.x = w.x;
     right.y = w.y;
     gravity(self);
+    //boundary(self);
+
+
+
 
     //controls commenting out the w s andothers
     /*
@@ -105,22 +139,32 @@ void player_think(Entity* self)
 
     //space is jump
     if (keys[SDL_SCANCODE_SPACE]) {
-        //vector3d_add(self->position, self->position);
+        //vector3d_add(self->position, self->position);`
         //elf->position.z += self->position.z * .1;
-        self->position.z += 1;//Adds height slower than the acceleration downwards, creating a jumpind effect
+
+        //FIX IT SO IT IS BETTER
+        self->position.z += .75;//Adds height slower than the acceleration downwards, creating a jumpind effect
         
         //slog("JUMPING");
 
     }
-   
+   /*
+    if (keys[SDL_SCANCODE_P]) {
+        int x = self->position.x;
+        slog( x);
+        int y = self->position.y;
+        slog(y);
+        int z = self->position.z;
+        slog(z);
+    }
+    */
 
-
-    if (keys[SDL_SCANCODE_Z])self->position.z -= 1;
-    if (keys[SDL_SCANCODE_X])self->position.z += 1;
+    if (keys[SDL_SCANCODE_Z])self->position.y = -30;
+    if (keys[SDL_SCANCODE_X])self->position.y = 0;
 
     //if (keys[SDL_SCANCODE_M]){ self->position.y += 100; }
     //if (keys[SDL_SCANCODE_K]) { self->position.y -= 100;}
-    
+    /*
     if (keys[SDL_SCANCODE_UP])self->rotation.x -= 0.0050;
     if (keys[SDL_SCANCODE_DOWN])self->rotation.x += 0.0050;
     if (keys[SDL_SCANCODE_RIGHT])self->rotation.z -= 0.0050;
@@ -128,7 +172,8 @@ void player_think(Entity* self)
     
     if (mouse.x != 0)self->rotation.z -= (mouse.x * 0.001);
     if (mouse.y != 0)self->rotation.x += (mouse.y * 0.001);
-    
+    */
+
     if (keys[SDL_SCANCODE_F3])
     {
         thirdPersonMode = !thirdPersonMode;
@@ -136,10 +181,7 @@ void player_think(Entity* self)
     }
 
     //vector3d_copy(camera, self->position);
-    int i = 0, c, j;
-    if (!self) {
-        slog("no self provided");
-    }
+    
     //for (i = 0, i < entity_manager.entity_count; i++) {
 
     //}
@@ -158,8 +200,46 @@ void player_think(Entity* self)
         }
        
     }*/
+    //
 
-   
+
+    if (delay > 0) {
+        //slog("delay decrement ");
+        delay--;
+    }
+
+
+    if (entityCollide(self) == 0 && delay == 0) {
+        //slog("collision detected");
+        self->health -= 1; 
+        //slog("health decrement ");
+       // slog(self->health);
+        delay = 100;
+        //slog(delay);
+    }
+
+
+
+
+    if (self->health<=0) {
+        slog("dead ");
+        entity_free(self);
+    }
+
+
+  //  healthDisplay(self);
+    
+    if (self->position.x > 162) {
+        self->velocity.x = 0;
+        self->position.x = 162;
+        slog("boundary hit");
+    }
+    if (self->position.x < -162) {
+        self->velocity.x = 0;
+        self->position.x = -162;
+        slog("boundary hit");
+    }
+
 }
 
 

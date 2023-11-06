@@ -102,8 +102,8 @@ void entity_draw_all()
         entity_draw(&entity_manager.entity_list[i]);
     }
 }
-
-void entityCollide(Entity* self) {
+//0 true 1 false
+int entityCollide(Entity* self) {
     int i;
     //slog("Collide function entered");
     for (i = 0; i < entity_manager.entity_count; i++)
@@ -118,8 +118,10 @@ void entityCollide(Entity* self) {
             vector3d_add(A, A, entity_manager.entity_list[i].position);
             vector3d_add(B, B, self->position);
             if (gfc_box_overlap(A, B)) {
-                slog("COLLISION NOW");
-
+                //slog("COLLISION NOW");
+                //TODO CODE IN DAMAGE HERE
+                //TODO CODE IN Actual COllision
+                return 0;
             }
         }
         else {
@@ -127,7 +129,7 @@ void entityCollide(Entity* self) {
         }
     }
 
-    return NULL;
+    return 1;
 }
 void entity_think(Entity *self)
 {
@@ -255,5 +257,7 @@ void gravity(Entity* self) {
     }
     
 }
+
+
 
 /*eol@eof*/
