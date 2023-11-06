@@ -37,6 +37,8 @@ int main(int argc,char *argv[])
     Entity *agu;
     Entity* level;
     Entity* flyer;
+    Entity* jumpy;
+    Entity* boss;
     Entity* player;
     Particle particle[100];
     Matrix4 skyMat;
@@ -68,7 +70,8 @@ int main(int argc,char *argv[])
     agu = agumon_new(vector3d(0 ,0,0));
     level = level_new(vector3d(0,0,0));
     flyer = flyer_new(vector3d(40, 0, 10));
-    jumpy_new(vector3d(-40, 0, 0));
+    jumpy = jumpy_new(vector3d(-40, 0, 0));
+    boss = boss_new(vector3d(-40, -30, 0));
     if (agu)agu->selected = 1;
     w = world_load("config/testworld.json");
     //w = world_load("model/Leveltest.model");
