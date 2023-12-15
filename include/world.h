@@ -12,6 +12,10 @@
 
 #include "entity.h"
 
+
+#include "spawns.h"
+
+
 typedef struct
 {
     Matrix4 modelMat;

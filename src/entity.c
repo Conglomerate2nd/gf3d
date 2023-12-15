@@ -102,15 +102,35 @@ void entity_draw_all()
         entity_draw(&entity_manager.entity_list[i]);
     }
 }
-//0 true 1 false
-int entityCollide(Entity* self) {
+
+//0 ground 1 no enemy 2 ground 3 4 5 6 7 8 items, 
+
+int entityCollideOLD(Entity* self) {
     int i;
     //slog("Collide function entered");
     for (i = 0; i < entity_manager.entity_count; i++)
     {
        // slog("For loop entered");
-        if (self->type!= entity_manager.entity_list[i].type && entity_manager.entity_list[i].type!=0&&self->type!=0) {//checks for self
+        if (self->type != entity_manager.entity_list[i].type && entity_manager.entity_list[i].type ==3 && self->type != 0&& self->type<3) {//checks for self
             //slog("IN check");
+            // For ITEM
+            //Box A; A.d = 0; A.h = 0; A.w = 0; A.x = 0; A.y = 0; A.z = 0;
+            //Box B; B.d = 0; B.h = 0; B.w = 0; B.x = 0; B.y = 0; B.z = 0;
+            Box A = gfc_box(self->bounds.x, self->bounds.y, self->bounds.z, self->bounds.w, self->bounds.h, self->bounds.d);
+            Box B = gfc_box(entity_manager.entity_list[i].bounds.x, entity_manager.entity_list[i].bounds.y, entity_manager.entity_list[i].bounds.z, entity_manager.entity_list[i].bounds.w, entity_manager.entity_list[i].bounds.h, entity_manager.entity_list[i].bounds.d);
+            vector3d_add(A, A, entity_manager.entity_list[i].position);
+            vector3d_add(B, B, self->position);
+            if (gfc_box_overlap(A, B)) {
+                //slog("COLLISION NOW");
+                //TODO CODE IN DAMAGE HERE
+                //TODO CODE IN Actual COllision
+                return 3;
+            }
+
+        }
+        else if (self->type!= entity_manager.entity_list[i].type && entity_manager.entity_list[i].type!=0&&self->type!=0 && self->type < 3) {//checks for self
+            //slog("IN check");
+            
             //Box A; A.d = 0; A.h = 0; A.w = 0; A.x = 0; A.y = 0; A.z = 0;
             //Box B; B.d = 0; B.h = 0; B.w = 0; B.x = 0; B.y = 0; B.z = 0;
             Box A = gfc_box(self->bounds.x, self->bounds.y, self->bounds.z, self->bounds.w, self->bounds.h, self->bounds.d);
@@ -123,14 +143,139 @@ int entityCollide(Entity* self) {
                 //TODO CODE IN Actual COllision
                 return 0;
             }
+
         }
-        else {
+        else if (self->type != entity_manager.entity_list[i].type && entity_manager.entity_list[i].type == 0 && self->type != 0 && self->type < 3) {
+            //IF IT IS ground
+            Box A = gfc_box(self->bounds.x, self->bounds.y, self->bounds.z, self->bounds.w, self->bounds.h, self->bounds.d);
+            Box B = gfc_box(entity_manager.entity_list[i].bounds.x, entity_manager.entity_list[i].bounds.y, entity_manager.entity_list[i].bounds.z, entity_manager.entity_list[i].bounds.w, entity_manager.entity_list[i].bounds.h, entity_manager.entity_list[i].bounds.d);
+            vector3d_add(A, A, entity_manager.entity_list[i].position);
+            vector3d_add(B, B, self->position);
+            if (gfc_box_overlap(A, B)) {
+                //slog("COLLISION NOW");
+                //TODO CODE IN DAMAGE HERE
+                //TODO CODE IN Actual COllision
+                //self->velocity.x = 0;
+                //self->velocity.y = 0;
+                self->velocity.z = 0;
+                return 2;
+            } 
+        }else {
             continue;
         }
     }
-
+    //if false
     return 1;
 }
+
+//0 ground 1 no enemy 2 ground 3 4 5 6 7 8 items, 
+
+int entityCollide(Entity* self) {
+    int i;
+    //slog("Collide function entered");
+    for (i = 0; i < entity_manager.entity_count; i++)
+    {
+        //IF self!=same type as entity  and entity is of this tye, and the 
+        //PLAYER is 1 
+        //GROUND is 0
+        //ENEMY is 2
+        //ITEMS are 3 up
+
+
+        //I DONT Care if the entities are colliding, so long as they stand on plarforms
+        //USING NESTED IF STATEMENTS< WHILE RUDEMENTARY< BETTER FOR ORGTANIZATION COMPARED TO ORIGINAL
+        //EASIER TO MANAGER
+
+
+        //STRUCTURE
+        //IF NOT SAME
+        //IF TYPE
+        //IF COLLIDING
+        //RETURN TYPE
+        if (self->type != entity_manager.entity_list[i].type) {
+            if (self->type == 1) {
+
+                //PLAYER
+
+                Box A = gfc_box(self->bounds.x, self->bounds.y, self->bounds.z, self->bounds.w, self->bounds.h, self->bounds.d);
+                Box B = gfc_box(entity_manager.entity_list[i].bounds.x, entity_manager.entity_list[i].bounds.y, entity_manager.entity_list[i].bounds.z, entity_manager.entity_list[i].bounds.w, entity_manager.entity_list[i].bounds.h, entity_manager.entity_list[i].bounds.d);
+                vector3d_add(A, A, entity_manager.entity_list[i].position);
+                vector3d_add(B, B, self->position);
+                if (gfc_box_overlap(A, B)) {
+                    //slog("COLLISION NOW");
+                    //TODO CODE IN DAMAGE HERE
+                    //TODO CODE IN Actual COllision
+                    //self->velocity.x = 0;
+                    //self->velocity.y = 0;
+
+                    //IF PLATFORM ELSE CONTINUE
+                    if (entity_manager.entity_list[i].type == 0) {
+                        self->velocity.z = 0;
+                    }
+                    //Retrun the type collided if
+                    return(entity_manager.entity_list[i].type);
+                }//OVERLAP CHECK END
+
+            }else if (self->type == 2){
+                //ENEMY
+                if (entity_manager.entity_list[i].type == 0) {
+                    //PLAYER
+                    Box A = gfc_box(self->bounds.x, self->bounds.y, self->bounds.z, self->bounds.w, self->bounds.h, self->bounds.d);
+                    Box B = gfc_box(entity_manager.entity_list[i].bounds.x, entity_manager.entity_list[i].bounds.y, entity_manager.entity_list[i].bounds.z, entity_manager.entity_list[i].bounds.w, entity_manager.entity_list[i].bounds.h, entity_manager.entity_list[i].bounds.d);
+                    vector3d_add(A, A, entity_manager.entity_list[i].position);
+                    vector3d_add(B, B, self->position);
+                    if (gfc_box_overlap(A, B)) {
+                        //slog("COLLISION NOW");
+                        //TODO CODE IN DAMAGE HERE
+                        //TODO CODE IN Actual COllision
+                        //self->velocity.x = 0;
+                        //self->velocity.y = 0;
+                        self->velocity.z = 0;
+                        //Retrun the type collided if
+                        return(0);
+                    }//OVERLAP CHECK END
+
+                }
+
+            }
+            else if (self->type >= 3) {
+                //ENEMY
+                if (entity_manager.entity_list[i].type == 1) {
+                    //PLAYER
+                    Box A = gfc_box(self->bounds.x, self->bounds.y, self->bounds.z, self->bounds.w, self->bounds.h, self->bounds.d);
+                    Box B = gfc_box(entity_manager.entity_list[i].bounds.x, entity_manager.entity_list[i].bounds.y, entity_manager.entity_list[i].bounds.z, entity_manager.entity_list[i].bounds.w, entity_manager.entity_list[i].bounds.h, entity_manager.entity_list[i].bounds.d);
+                    vector3d_add(A, A, entity_manager.entity_list[i].position);
+                    vector3d_add(B, B, self->position);
+                    if (gfc_box_overlap(A, B)) {
+                        //slog("COLLISION NOW");
+                        //TODO CODE IN DAMAGE HERE
+                        //TODO CODE IN Actual COllision
+                        //self->velocity.x = 0;
+                        //self->velocity.y = 0;
+
+                        //Retrun the type collided if
+                        slog("collected ");
+                        
+                        if (self->type == 3) {
+                            entity_manager.entity_list[i].score += 1;
+                        }
+                        
+                        entity_free(self);
+                        //return(self->type);
+                    }//OVERLAP CHECK END
+
+                }
+            }//IF SELF IS TYPE
+        }//IF NOT THE SAME
+
+        
+     }//For LOOP
+
+
+}
+
+
+
 void entity_think(Entity *self)
 {
     if (!self)return;
@@ -257,6 +402,14 @@ void gravity(Entity* self) {
     }
     
 }
+
+Entity* entity_spawn_from_config(SJson* config) {
+    //Entity ent = NULL;
+   // return ent;
+}
+
+
+
 
 
 

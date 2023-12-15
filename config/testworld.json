@@ -1,9 +1,27 @@
 {
     "world":
     {
-        "model":"models/antioch.model",
-        "position":[7000,-2500,-5000],
-        "scale":[5000,5000,5000],
-        "rotation":[0,0.001,0]
+        "model":"models/Leveltest.model",
+        "position":[-100,0,0],
+        "scale":[10,10,10],
+        "rotation":[1.57079632679,0,0],
+        "keyList":[{
+            "player":"player",
+            "enemy":"enemy",
+            "flyer":"flyer"
+        }],
+        "spawnList":
+        [{
+            "player":[0,0,0],
+            "enemy":[40, -30, 0],
+            "flyer":[0,-20,0]
+        }],
+        "spawnList2":
+        [{
+            "player":["player",[0,0,0]],
+            "enemy":["enemy",[0,0,0]],
+            "flyer":["flyer",[0,0,0]]
+        }]
+        
     }
 }

@@ -13,7 +13,7 @@
 #include "gf2d_sprite.h"
 #include "gf2d_font.h"
 #include "gf2d_draw.h"
-
+#include "gfc_audio.h"
 
 
 #include "gf3d_camera.h"
@@ -22,7 +22,11 @@
 static int thirdPersonMode = 1;
 static int layer = 1;
 static int delay = 0;
+static int frame = 0;
+static int timerAnim = 0;
+static int inv = 0;
 //static int ground = 0;
+static int damageON = 0;
 
 void player_think(Entity *self);
 void player_update(Entity *self);
@@ -34,6 +38,7 @@ void player_update(Entity *self);
 
 Entity *player_new(Vector3D position)
 {
+    gfc_audio_init(1,1,1,1,1,1);
     Entity *ent = NULL;
     //double jumpHeight = 5;
     
@@ -64,18 +69,29 @@ Entity *player_new(Vector3D position)
     ent->bounds.w = 4;
     ent->bounds.d = 4;
 
-    ent->position.z = 0;
+    //ent->position.z = 0;
     ent->type = 1;
     ent->ground = 0;
     ent->radius = 1;
     ent->health = 5;
 
-
+    ent->ability = 0;
+    ent->score = 0;
     return ent;
  
 
 }
 
+void abilityHandler(Entity* self) {
+    switch (self->ability) {
+    case 1: {break; }//FIRE
+    case 2: {break; }//SPEED/INVINCIBILITY
+    case 3: {break; }
+    case 4: {break; }
+    case 5: {break; }
+    default:break;
+    }
+}
 
 void healthDisplay(Entity* self) {
     gf3d_vgraphics_render_start();
@@ -113,7 +129,7 @@ void player_think(Entity* self)
     gravity(self);
     //boundary(self);
 
-
+    Sound* sfx = gfc_sound_load("audio/cartoon-jump-6462.wav",.5,0);
 
 
     //controls commenting out the w s andothers
@@ -130,21 +146,44 @@ void player_think(Entity* self)
 
     if (keys[SDL_SCANCODE_D])
     {
-        vector3d_add(self->position, self->position, right);
-    }
-    if (keys[SDL_SCANCODE_A])
+        //vector3d_add(self->position, self->position, right);
+        self->velocity.x = .25;
+    }else if (keys[SDL_SCANCODE_A])
     {
-        vector3d_add(self->position, self->position, -right);
-    }
+        //vector3d_add(self->position, self->position, -right);
+        self->velocity.x = -.25;
+    }else { self->velocity.x = 0; }
 
     //space is jump
     if (keys[SDL_SCANCODE_SPACE]) {
+        //plays on button release
+        //FIX THIS TODO
+        gfc_sound_play(sfx,0,1,-1,-1);
+
+
+
         //vector3d_add(self->position, self->position);`
         //elf->position.z += self->position.z * .1;
 
         //FIX IT SO IT IS BETTER
         self->position.z += .75;//Adds height slower than the acceleration downwards, creating a jumpind effect
+        //slog("%f", self->velocity.z);
+        //self->velocity.z = 
+        // 
+        // USE kinematic equation
+        // 
+        // velocity = velocity + Acceleration*time;
+        //self->velocity.z = .75 - self->acceleration.z * ;
         
+        //PLAYER IS ALWAYS FAST FALLING FIX IT NOW
+        
+        //self->velocity.z = .005 +self->acceleration.z*.1;
+        /*
+        if (self->velocity.z == 0) {
+            self->velocity.z =5;
+        }
+        */
+
         //slog("JUMPING");
 
     }
@@ -209,26 +248,103 @@ void player_think(Entity* self)
     }
 
 
-    if (entityCollide(self) == 0 && delay == 0) {
+
+    //TODO ADD INVINCIBILLITY
+
+    if (entityCollide(self) == 2 && delay == 0&&damageON==0) {
         //slog("collision detected");
-        self->health -= 1; 
+        self->health -= 1;
         //slog("health decrement ");
        // slog(self->health);
         delay = 100;
         //slog(delay);
+
     }
 
-
-
-
-    if (self->health<=0) {
+    if (self->health <= 0) {
         slog("dead ");
         entity_free(self);
     }
 
 
+    switch (self->ability) {
+    case 1: {break; }//FIRE
+    case 2: {damageON = 1; inv = 100; break; }//SPEED/INVINCIBILITY
+    case 3: {break; }
+    case 4: {break; }
+    case 5: {break; }
+    default:break;
+    }
+
+    if (damageON == 1&&inv==0) {
+        damageON == 0;
+    }
+    if (inv > 0) {
+        inv--;
+    }
+
+    switch (entityCollide(self)) {
+        case 3: {
+            //PICKUP
+            self->score += 1; //slog(self->score); 
+            break;
+            }
+        case 4: {
+            //HEALTH
+            //ADD 1 Health if not at max health.
+            //DONT GIVE HEALTH IF AT 5 or 10. 
+                if (self->health<5) {
+                    self->health++;
+                }
+                //only hit if 6 or up but less than 10 aka DOUBLE HEALTH BAR
+                else if (self->health < 10 && self->health != 5) {
+                    self->health++;
+                }
+
+                break;
+            }
+        case 5: {
+            //SECOND BAR HEALTH
+            self->health = 10;
+            break;
+            }
+        case 6: {
+            //FIRE
+            self->ability = 1;
+            break;
+            }
+        case 7: {
+            //SPEED/INVINCIBILITY
+            self->ability = 2;
+            break;
+            }
+        default:break;
+    }
+
+
+
+
+
+
+
+    if (timerAnim == 0&&frame==1) {
+        gf3d_model_free(self->model);
+
+        self->model = gf3d_model_load("models/frog.model");
+        frame = 0;
+        timerAnim = 100;
+    }
+    if (timerAnim == 0 && frame == 0) {
+        gf3d_model_free(self->model);
+
+        self->model = gf3d_model_load("models/f1.model");
+        frame = 1;
+        timerAnim = 100;
+    }
+
+    timerAnim--;
   //  healthDisplay(self);
-    
+    /*
     if (self->position.x > 162) {
         self->velocity.x = 0;
         self->position.x = 162;
@@ -239,8 +355,36 @@ void player_think(Entity* self)
         self->position.x = -162;
         slog("boundary hit");
     }
+    */
 
+    /*
+    if (self->position.z != 0 && frame == 0) {
+        gf3d_model_free(self->model);
+
+        self->model = gf3d_model_load("models/frog.model");
+        frame = 1; 
+
+    }
+    else if (self->position.z != 0 && frame==1) {
+        gf3d_model_free(self->model);
+
+        frame = 2;
+        self->model = gf3d_model_load("models/f1.model");
+    }*/
+    /*
+    else if (self->velocity.z == 0 && frame !=0) {
+
+        //TODO create a state for player where they are not falling
+        gf3d_model_free(self->model);
+
+        self->model = gf3d_model_load("models/frog.model");
+        frame=0;
+    }*/
+    
+    
 }
+
+
 
 
 

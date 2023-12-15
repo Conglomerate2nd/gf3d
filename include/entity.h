@@ -53,10 +53,16 @@ typedef struct Entity_S
     void *customData;   /**<IF an entity needs to keep track of extra data, we can do it here*/
     void   (*gravity)(struct Enitity_S *self);
     void   (*boundary)(struct Enitity_S* self);
-    int type;//0=ground,1=player,2=enemy. else is unused
+    int type;//0=ground,1=player,2=enemy,3=item. else is unused
     int ground;
     float radius;
     float hp;
+
+    //PLAYER ONLY 
+    // 
+    //TOO LAZY TO MAKE Class inheritence easier to do this at moment
+    int ability;//ONLY TO BE USED BY PLAYER
+    int score;
     
 }Entity;
 

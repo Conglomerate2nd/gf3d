@@ -1,10 +1,19 @@
 #include "simple_logger.h"
 #include "simple_json.h"
+#include "simple_json_list.h"
+#include "simple_json_array.h"
+#include "simple_json_string.h"
 
 #include "gfc_types.h"
 #include "gfc_config.h"
 
 #include "world.h"
+
+
+#include "spawns.h"
+
+
+
 
 /*
 typedef struct
@@ -16,10 +25,17 @@ typedef struct
 }World;
 */
 
+
+
+
 World *world_load(char *filename)
 {
-    SJson *json,*wjson;
+    SJson* json, * wjson;
+    SJson* array, * item;
     World *w = NULL;
+    char* list;
+    
+
     const char *modelName = NULL;
     w = gfc_allocate_array(sizeof(World),1);
     if (w == NULL)
@@ -51,11 +67,35 @@ World *world_load(char *filename)
     }
     w->model = gf3d_model_load(modelName);
 
+
+
     sj_value_as_vector3d(sj_object_get_value(wjson,"scale"),&w->scale);
     sj_value_as_vector3d(sj_object_get_value(wjson,"position"),&w->position);
     sj_value_as_vector3d(sj_object_get_value(wjson,"rotation"),&w->rotation);
     sj_free(json);
     w->color = gfc_color(1,1,1,1);
+
+
+    array = gfc_allocate_array(sizeof(sj_object_get_value(wjson, "spawnList")), 1);
+    
+    array = sj_object_get_value(wjson, "spawnList");
+    SJson* enemy;
+     
+    if (array) {
+
+        slog(" IT DO WORK");
+    }else{ slog("SHIT IT DONT WORK"); }
+
+
+   spawn_entity_by_name("platform", vector3d(-40,-30,25));
+    
+   
+    
+
+    //IDEA CYCLE THROUGH ALL NAMES AND CHECK FOR EACH NAME
+   
+
+
     return w;
 }
 
@@ -76,7 +116,7 @@ void world_delete(World *world)
 
 void world_run_updates(World *self)
 {
-    self->rotation.z += 0.0001;
+   // self->rotation.z += 0.0001;
     gfc_matrix_identity(self->modelMat);
     
     gfc_matrix_scale(self->modelMat,self->scale);
@@ -85,7 +125,15 @@ void world_run_updates(World *self)
 
 }
 
-void world_add_entity(World *world,Entity *entity);
+void world_add_entity(World *world,Entity *entity){
+
+}
+
+int world_collision_height(Vector3D from, Vector3D* collide) {
+
+}
+
+
 
 
 /*eol@eof*/

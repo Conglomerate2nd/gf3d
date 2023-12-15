@@ -16,13 +16,19 @@
 #include "gf2d_sprite.h"
 #include "gf2d_font.h"
 #include "gf2d_draw.h"
+#include "gfc_audio.h"
 
 #include "entity.h"
 #include "agumon.h"
 #include "player.h"
 #include "world.h"
+#include "pickup.h"
+
+#include "simple_json_array.h"
+#include "simple_json_object.h"
 
 extern int __DEBUG;
+static int scene = 0;
 
 int main(int argc,char *argv[])
 {
@@ -36,7 +42,7 @@ int main(int argc,char *argv[])
     World *w;
     Entity *agu;
     Entity* level;
-    Entity* flyer;
+    Entity* flyer,*flyer2;
     Entity* jumpy;
     Entity* boss;
     Entity* player;
@@ -44,7 +50,7 @@ int main(int argc,char *argv[])
     Matrix4 skyMat;
     Model *sky;
    
-
+    //gfc_audio_init;
     for (a = 1; a < argc;a++)
     {
         if (strcmp(argv[a],"--debug") == 0)
@@ -68,11 +74,19 @@ int main(int argc,char *argv[])
     
     //ALL spawns
     agu = agumon_new(vector3d(0 ,0,0));
-    level = level_new(vector3d(0,0,0));
+    //level = level_new(vector3d(0,0,0));
     flyer = flyer_new(vector3d(40, 0, 10));
-    jumpy = jumpy_new(vector3d(-40, 0, 0));
-    boss = boss_new(vector3d(-40, -30, 0));
-    if (agu)agu->selected = 1;
+    flyer = flyer_new(vector3d(50, -30, 10));
+
+    jumpy_new(vector3d(-40, 0, 0));
+    boss_new(vector3d(-40, -30, 0));
+    //boss_new(vector3d(40, -30, 0));
+    platform_new(vector3d(40, -30, 20));
+    pickup_new((vector3d(40, -30, 40)));
+    //pickup_new((vector3d(40, -50, 25)));
+    double_health_new((vector3d(40, -30, 40)));
+    health_up_new((vector3d(40, -30, 50)));
+    //if (agu)agu->selected = 1;
     w = world_load("config/testworld.json");
     //w = world_load("model/Leveltest.model");
     SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -91,11 +105,15 @@ int main(int argc,char *argv[])
     sky = gf3d_model_load("models/sky.model");
     gfc_matrix_identity(skyMat);
     gfc_matrix_scale(skyMat,vector3d(100,100,100));
+
+
     
     // main game loop
     slog("gf3d main loop begin");
+    //slog(sj_object_to_json_string("config/testworld.json"));
     while(!done)
     {
+        //ENTER MAIN MENU
         gfc_input_update();
         gf2d_font_update();
         SDL_GetMouseState(&mousex,&mousey);
@@ -112,7 +130,12 @@ int main(int argc,char *argv[])
         //IF ANYTHING NEEDS TO BE DRAWN PU IT HERE
         gf3d_vgraphics_render_start();
 
+                
+
             //3D draws
+                
+                gf2d_sprite_draw(mouse, vector2d(mousex, mousey), vector2d(2, 2), vector3d(8, 8, 0), gfc_color(0.3, .9, 1, 0.9), (Uint32)mouseFrame);
+                
                 gf3d_model_draw_sky(sky,skyMat,gfc_color(1,1,1,1));
                 world_draw(w);
                 entity_draw_all();
@@ -127,10 +150,29 @@ int main(int argc,char *argv[])
                 gf2d_font_draw_line_tag("HP",FT_H1,gfc_color(1,1,1,1), vector2d(10,10));
                 
                 gf2d_draw_rect(gfc_rect(10 ,10,1000,32),gfc_color8(255,255,255,255));
+
+                gf2d_draw_rect_filled(gfc_rect(1000, 10, 1000, 32), gfc_color8(128, 128, 128, 255));
+                gf2d_font_draw_line_tag("Power", FT_H1, gfc_color(1, 1, 1, 1), vector2d(1000, 10));
+
+                switch (player->score) {
+                case 3:gf2d_draw_rect_filled(gfc_rect(1000, 30, 32, 32), gfc_color8(0, 0, 255, 255));
+                case 2:gf2d_draw_rect_filled(gfc_rect(1000, 30, 32, 32), gfc_color8(0, 0, 255, 255));
+                case 1:gf2d_draw_rect_filled(gfc_rect(1000, 30, 32, 32), gfc_color8(0, 0, 255, 255));  break;
+                case 0:  break;
+                default:slog("error at drawing"); break;
+                }
+                
+
                 
 
                 //goes to the case and draws everything below it
+                //10 is the bonus pickup
                 switch (player->health) {
+                case 10:gf2d_draw_rect_filled(gfc_rect(138, 50, 32, 32), gfc_color8(255, 0, 0, 255));
+                case 9:gf2d_draw_rect_filled(gfc_rect(106, 50, 32, 32), gfc_color8(255, 0, 0, 255));
+                case 8:gf2d_draw_rect_filled(gfc_rect(74, 50, 32, 32), gfc_color8(255, 0, 0, 255));
+                case 7:gf2d_draw_rect_filled(gfc_rect(42, 50, 32, 32), gfc_color8(255, 0, 0, 255));
+                case 6:gf2d_draw_rect_filled(gfc_rect(10, 50, 32, 32), gfc_color8(255, 0, 0, 255));
                 case 5:gf2d_draw_rect_filled(gfc_rect( 138, 30, 32, 32), gfc_color8(255, 0, 0, 255));
                 case 4:gf2d_draw_rect_filled(gfc_rect( 106, 30, 32, 32), gfc_color8(255, 0, 0, 255));
                 case 3:gf2d_draw_rect_filled(gfc_rect( 74, 30, 32, 32), gfc_color8(255, 0, 0, 255));
@@ -139,7 +181,7 @@ int main(int argc,char *argv[])
                 case 0:  break;
                 default:slog("error at drawing"); break;
                 }
-                //gf2d_sprite_draw(mouse,vector2d(mousex,mousey),vector2d(2,2),vector3d(8,8,0),gfc_color(0.3,.9,1,0.9),(Uint32)mouseFrame);
+                gf2d_sprite_draw(mouse,vector2d(mousex,mousey),vector2d(2,2),vector3d(8,8,0),gfc_color(0.3,.9,1,0.9),(Uint32)mouseFrame);
         gf3d_vgraphics_render_end();
 
 

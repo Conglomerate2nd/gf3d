@@ -2,7 +2,7 @@
 #include "simple_logger.h"
 #include "agumon.h"
 
-
+//YOU CAN MAKE ALL ENEMIES STEM FROM HERE BY GIVING THEM A TYPE PARAMETER IN THE NEW FUNCTION
 void agumon_update(Entity *self);
 
 void agumon_think(Entity *self);
