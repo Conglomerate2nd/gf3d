@@ -73,7 +73,7 @@ int main(int argc,char *argv[])
     mouse = gf2d_sprite_load("images/pointer.png",32,32, 16);
     
     //ALL spawns
-    agu = agumon_new(vector3d(0 ,0,0));
+    //agu = agumon_new(vector3d(0 ,0,0));
     //level = level_new(vector3d(0,0,0));
     flyer = flyer_new(vector3d(40, 0, 10));
     flyer = flyer_new(vector3d(50, -30, 10));
@@ -82,13 +82,19 @@ int main(int argc,char *argv[])
     boss_new(vector3d(-40, -30, 0));
     //boss_new(vector3d(40, -30, 0));
     platform_new(vector3d(40, -30, 20));
-    pickup_new((vector3d(40, -30, 40)));
-    //pickup_new((vector3d(40, -50, 25)));
+    pickup_new((vector3d(40, -30, 0)));
+    pickup_new((vector3d(40, -30, 25)));
+    pickup_new((vector3d(60, -30, 0)));
+    fire_new((vector3d(-40, -30, 0)));
     double_health_new((vector3d(40, -30, 40)));
     health_up_new((vector3d(40, -30, 50)));
+
+    speed_up_new((vector3d(70, 0, 0)));
     //if (agu)agu->selected = 1;
     w = world_load("config/testworld.json");
     //w = world_load("model/Leveltest.model");
+
+    spawn_entity_by_name("flyer", vector3d(40, -30, 0));
     SDL_SetRelativeMouseMode(SDL_TRUE);
     slog_sync();
     gf3d_camera_set_scale(vector3d(1,1,1));
@@ -105,6 +111,7 @@ int main(int argc,char *argv[])
     sky = gf3d_model_load("models/sky.model");
     gfc_matrix_identity(skyMat);
     gfc_matrix_scale(skyMat,vector3d(100,100,100));
+
 
 
     
@@ -155,9 +162,9 @@ int main(int argc,char *argv[])
                 gf2d_font_draw_line_tag("Power", FT_H1, gfc_color(1, 1, 1, 1), vector2d(1000, 10));
 
                 switch (player->score) {
-                case 3:gf2d_draw_rect_filled(gfc_rect(1000, 30, 32, 32), gfc_color8(0, 0, 255, 255));
+                case 3:gf2d_draw_rect_filled(gfc_rect(1000, 14, 32, 32), gfc_color8(0, 0, 255, 255));
                 case 2:gf2d_draw_rect_filled(gfc_rect(1000, 30, 32, 32), gfc_color8(0, 0, 255, 255));
-                case 1:gf2d_draw_rect_filled(gfc_rect(1000, 30, 32, 32), gfc_color8(0, 0, 255, 255));  break;
+                case 1:gf2d_draw_rect_filled(gfc_rect(1000, 46, 32, 32), gfc_color8(0, 0, 255, 255));  break;
                 case 0:  break;
                 default:slog("error at drawing"); break;
                 }

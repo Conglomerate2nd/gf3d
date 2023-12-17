@@ -87,7 +87,7 @@ World *world_load(char *filename)
     }else{ slog("SHIT IT DONT WORK"); }
 
 
-   spawn_entity_by_name("platform", vector3d(-40,-30,25));
+    //spawn_entity_by_name("flyer", vector3d(40, -30, 0));
     
    
     

@@ -256,11 +256,17 @@ int entityCollide(Entity* self) {
                         //Retrun the type collided if
                         slog("collected ");
                         
+
                         if (self->type == 3) {
-                            entity_manager.entity_list[i].score += 1;
+                            //CAPPED SCIRE AT 3
+                            if (entity_manager.entity_list[i].score < 3) {
+                                entity_manager.entity_list[i].score += 1;
+                            }
                         }
-                        
                         entity_free(self);
+
+                        
+                        
                         //return(self->type);
                     }//OVERLAP CHECK END
 

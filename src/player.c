@@ -27,6 +27,9 @@ static int timerAnim = 0;
 static int inv = 0;
 //static int ground = 0;
 static int damageON = 0;
+static int multiplier = 1;
+static int dashTime=0;  
+
 
 void player_think(Entity *self);
 void player_update(Entity *self);
@@ -107,6 +110,7 @@ void healthDisplay(Entity* self) {
     gf3d_vgraphics_render_end();
 }
 
+
 void player_think(Entity* self)
 {
     Vector3D forward = { 0 };
@@ -116,7 +120,9 @@ void player_think(Entity* self)
     int mx, my;
     SDL_GetRelativeMouseState(&mx, &my);
     const Uint8* keys;
+    const Uint8* press;
     keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+    press = SDL_GetKeyboardFocus(NULL);
    // int delay = 0;
     mouse.x = mx;
     mouse.y = my;
@@ -130,7 +136,7 @@ void player_think(Entity* self)
     //boundary(self);
 
     Sound* sfx = gfc_sound_load("audio/cartoon-jump-6462.wav",.5,0);
-
+    //Sound* gameOver = gfc_sound_load("audio/negative_beeps-6008.wav", .5, 1);
 
     //controls commenting out the w s andothers
     /*
@@ -147,15 +153,16 @@ void player_think(Entity* self)
     if (keys[SDL_SCANCODE_D])
     {
         //vector3d_add(self->position, self->position, right);
-        self->velocity.x = .25;
+        self->velocity.x = .25*multiplier;
     }else if (keys[SDL_SCANCODE_A])
     {
         //vector3d_add(self->position, self->position, -right);
-        self->velocity.x = -.25;
+        self->velocity.x = -.25*multiplier;
     }else { self->velocity.x = 0; }
 
+
     //space is jump
-    if (keys[SDL_SCANCODE_SPACE]) {
+    if (keys[SDL_SCANCODE_SPACE]&&self->ability!=2) {
         //plays on button release
         //FIX THIS TODO
         gfc_sound_play(sfx,0,1,-1,-1);
@@ -200,6 +207,41 @@ void player_think(Entity* self)
 
     if (keys[SDL_SCANCODE_Z])self->position.y = -30;
     if (keys[SDL_SCANCODE_X])self->position.y = 0;
+
+    if (keys[SDL_SCANCODE_W]) {
+        //ABILITY BUTTON
+        if (self->score == 1) {
+            dashTime = 50;
+            if (keys[SDL_SCANCODE_A]) {
+                //DASH LEFT
+                
+                for (int i = 0; i < 10; i++) {
+                    self->gravity = NULL;
+                    vector3d_add(self->position, self->position, -right);
+
+
+                }
+                self->acceleration.z = -0.05;
+            }
+            else {
+                //DEFAULT IS RIGHT
+                for (int i = 0; i < 10; i++) {
+                    self->gravity = NULL;
+                    vector3d_add(self->position, self->position, right);
+
+                }
+                self->acceleration.z = -0.05;
+            }
+        }
+
+        if (self->score == 2) {
+
+        }
+
+        if (self->score == 3) {
+
+        }
+    }
 
     //if (keys[SDL_SCANCODE_M]){ self->position.y += 100; }
     //if (keys[SDL_SCANCODE_K]) { self->position.y -= 100;}
@@ -262,17 +304,19 @@ void player_think(Entity* self)
     }
 
     if (self->health <= 0) {
+        //gfc_sound_play(gameOver, 0, 1, -1, -1);
+        gfc_sound_play(sfx, 0, 1, -1, -1);
         slog("dead ");
         entity_free(self);
     }
 
 
     switch (self->ability) {
-    case 1: {break; }//FIRE
-    case 2: {damageON = 1; inv = 100; break; }//SPEED/INVINCIBILITY
-    case 3: {break; }
-    case 4: {break; }
-    case 5: {break; }
+        case 1: {multiplier = 4; break; }//FIRE
+        case 2: {damageON = 1; inv = 1000; slog("invincibler"); break; }//SPEED/INVINCIBILITY
+        case 3: {break; }
+        case 4: {break; }
+        case 5: {break; }
     default:break;
     }
 
@@ -281,6 +325,7 @@ void player_think(Entity* self)
     }
     if (inv > 0) {
         inv--;
+        slog(inv);
     }
 
     switch (entityCollide(self)) {
@@ -311,11 +356,13 @@ void player_think(Entity* self)
         case 6: {
             //FIRE
             self->ability = 1;
+            slog("fire");
             break;
             }
         case 7: {
             //SPEED/INVINCIBILITY
             self->ability = 2;
+            slog("speed");
             break;
             }
         default:break;
