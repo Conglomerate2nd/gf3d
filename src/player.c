@@ -215,7 +215,7 @@ void player_think(Entity* self)
             if (keys[SDL_SCANCODE_A]) {
                 //DASH LEFT
                 
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 5; i++) {
                     self->gravity = NULL;
                     vector3d_add(self->position, self->position, -right);
 
@@ -225,7 +225,7 @@ void player_think(Entity* self)
             }
             else {
                 //DEFAULT IS RIGHT
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 5; i++) {
                     self->gravity = NULL;
                     vector3d_add(self->position, self->position, right);
 
@@ -235,11 +235,11 @@ void player_think(Entity* self)
         }
 
         if (self->score == 2) {
-
+            self->position.y *= -1;
         }
 
         if (self->score == 3) {
-
+            self->acceleration.z *= -1;
         }
     }
 
@@ -313,7 +313,7 @@ void player_think(Entity* self)
 
     switch (self->ability) {
         case 1: {multiplier = 4; break; }//FIRE
-        case 2: {damageON = 1; inv = 1000; slog("invincibler"); break; }//SPEED/INVINCIBILITY
+        case 2: {self->rotation.z += 1; break; }//SPEED/INVINCIBILITY// FLIGHT
         case 3: {break; }
         case 4: {break; }
         case 5: {break; }

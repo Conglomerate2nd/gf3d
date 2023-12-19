@@ -88,6 +88,7 @@ int main(int argc,char *argv[])
     fire_new((vector3d(-40, -30, 0)));
     double_health_new((vector3d(40, -30, 40)));
     health_up_new((vector3d(40, -30, 50)));
+    health_up_new((vector3d(40, 0, 60)));
 
     speed_up_new((vector3d(70, 0, 0)));
     //if (agu)agu->selected = 1;
